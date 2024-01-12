@@ -1,8 +1,9 @@
 import { useRouter } from "next/router";
 import HeaderFooterUser from "@/components/HeaderFooterUser";
 import { useEffect } from "react";
+import axios from "axios";
 
-export default function OrderFoodPage() {
+export default function OrderFoodPage({userData}) {
     const router = useRouter();
     const foodselected = Number(router.query.orderfood);
 
@@ -10,7 +11,7 @@ export default function OrderFoodPage() {
         console.log(typeof (foodselected));
     })
 
-    return <HeaderFooterUser>
+    return <HeaderFooterUser userData={userData}>
         <div>
             <h1>Choose Funding Destination</h1>
             <select name="location" id="location" className="border border-black p-1 active:bg-green-400">
@@ -21,11 +22,11 @@ export default function OrderFoodPage() {
             </select>
         </div>
         <div >
-            <h1 className="text-xl font-bold">Nasi Kotak</h1>
+            <h1 className="text-xl font-bold">{userData.food[foodselected].nama}</h1>
             <h2>Restoran {foodselected + 1}</h2>
             <div className="flex justify-between mt-1">
                 <p>Total</p>
-                <p>(Koin){foodselected + 1}00</p>
+                <p>(Koin){userData.food[foodselected].harga}</p>
             </div>
         </div>
         <div className="text-center mt-80">
@@ -34,4 +35,12 @@ export default function OrderFoodPage() {
             </button>
         </div>
     </HeaderFooterUser>
+}
+
+export async function getServerSideProps() {
+    const getUserData = await axios.get('https://78f1-202-67-40-226.ngrok-free.app');
+    const userData = getUserData.data;
+    return {
+        props: { userData }
+    }
 }
